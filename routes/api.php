@@ -4,6 +4,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\TagController;
+use App\Http\Controllers\DiaryEntryController;
+use App\Http\Controllers\UserEntriesController;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,6 +24,9 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 Route::apiResource('register', RegisterController::class)->only(['store']);
+Route::apiResource('tags', TagController::class)->only(['index']);
+Route::apiResource('diary_entries', DiaryEntryController::class);
+Route::apiResource('users.diary_entries', UserEntriesController::class)->only(['index']);
 
 // api/auth/login
 Route::group([
