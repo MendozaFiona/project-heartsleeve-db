@@ -14,7 +14,8 @@ return [
     */
 
     'defaults' => [
-        'guard' => 'web',
+        'guard' => 'web', //if you want web too, just is manually configured in AuthController
+        //'guard' => 'api', //make laravel only receive requests that is api
         'passwords' => 'users',
     ],
 
@@ -42,10 +43,15 @@ return [
         ],
 
         'api' => [
+            'driver' => 'jwt',
+            'provider' => 'users',
+        ],
+        
+        /*'api' => [
             'driver' => 'token',
             'provider' => 'users',
             'hash' => false,
-        ],
+        ],*/
     ],
 
     /*

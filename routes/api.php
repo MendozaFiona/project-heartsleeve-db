@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RegisterController;
+use App\Http\Controllers\AuthController;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,3 +21,19 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 Route::apiResource('register', RegisterController::class)->only(['store']);
+
+// api/auth/login
+Route::group([
+
+    'middleware' => 'api',
+    'prefix' => 'auth'
+
+], function ($router) {
+
+    Route::post('login', [AuthController::class,'login'])->name('login');
+    Route::post('logout', [AuthController::class,'logout']);
+    
+    /*Route::post('refresh', 'AuthController@refresh');
+    Route::post('me', 'AuthController@me');*/
+
+});
