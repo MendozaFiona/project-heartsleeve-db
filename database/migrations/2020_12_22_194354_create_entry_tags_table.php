@@ -14,6 +14,7 @@ class CreateEntryTagsTable extends Migration
     public function up()
     {
         Schema::create('entry_tags', function (Blueprint $table) {
+            $table->uuid('id')->primary();
             $table->uuid('entry_id');
             $table->foreign('entry_id')->references('id')->on('diary_entries');
             $table->string('tag_id');

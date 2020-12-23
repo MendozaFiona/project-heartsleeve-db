@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\DiaryEntry;
+use App\Models\EntryTag;
+use App\Models\Tag;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -18,6 +20,7 @@ class DiaryEntryController extends Controller
         return DiaryEntry::select('title', 'content')
             ->paginate(20);
             //if this is also where discoverpage bases, then remove select
+        //return DiaryEntry::all()
     }
 
     
@@ -26,6 +29,8 @@ class DiaryEntryController extends Controller
         $validator = Validator::make($request->all(),[
             'title' => 'required',
             'content' => 'required',
+            'tags' => 'required',
+            'tags.*' => 'required|distinct',
         ]);
 
         if($validator->fails()){
@@ -34,6 +39,8 @@ class DiaryEntryController extends Controller
             $err = array(
                 'title' => $errors->first('title'),
                 'content' => $errors->first('content'),
+                'tags' => $errors->first('tags'),
+                'tags.*' => $errors->first('tags.*'),
             );
 
             return response()->json(array(
@@ -50,7 +57,35 @@ class DiaryEntryController extends Controller
         $diary_entry->content = $request->input('content');
     
         $diary_entry->save();
+
+        $entry_id = $diary_entry->id;
+        echo($entry_id);
+
         
+        
+        $data = $request->all();
+
+        //save tags input as array first $tags_array
+        //$request->input
+
+        foreach($data['tags'] as $item){
+            $tag = new Tag;
+            $entry_tag = new EntryTag;
+
+            $tag->id = $item;
+            $tag->name = $item;
+
+            $tag->save();
+
+            $entry_tag->tag_id = $item;//
+            $entry_tag->entry_id = $entry_id;
+            
+            echo($item);
+
+            $entry_tag->save();
+        }
+
+
         return response()->json(array(
             'message' => 'Entry saved!',
             'diary_entry' => $diary_entry
