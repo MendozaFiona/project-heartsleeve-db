@@ -56,26 +56,29 @@ class DiaryEntryController extends Controller
         $diary_entry->user_id = auth('api')->user()->id;
         $diary_entry->content = $request->input('content');
     
-        $diary_entry->save();
+        $diary_entry->save(); //uncommentafter
 
         $entry_id = $diary_entry->id;
-        echo($entry_id);
 
+        //
         
-        
+        //
         $data = $request->all();
 
-        //save tags input as array first $tags_array
-        //$request->input
-
         foreach($data['tags'] as $item){
-            $tag = new Tag;
             $entry_tag = new EntryTag;
 
-            $tag->id = $item;
-            $tag->name = $item;
+            $tag_db = DB::table('tags')->where('id', $item)->first();
 
-            $tag->save();
+
+            if($tag_db == null){
+                $tag = new Tag;
+
+                $tag->id = $item;
+                $tag->name = $item;
+
+                $tag->save();
+            }                  
 
             $entry_tag->tag_id = $item;//
             $entry_tag->entry_id = $entry_id;
@@ -83,6 +86,7 @@ class DiaryEntryController extends Controller
             echo($item);
 
             $entry_tag->save();
+
         }
 
 
@@ -90,6 +94,7 @@ class DiaryEntryController extends Controller
             'message' => 'Entry saved!',
             'diary_entry' => $diary_entry
         ), 201);
+    
     }
 
     
