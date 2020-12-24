@@ -29,8 +29,8 @@ class DiaryEntryController extends Controller
         $validator = Validator::make($request->all(),[
             'title' => 'required',
             'content' => 'required',
-            'tags' => 'required',
-            'tags.*' => 'required|distinct',
+            //'tags' => 'required',
+            'tags.*' => 'distinct',
         ]);
 
         if($validator->fails()){
@@ -39,7 +39,7 @@ class DiaryEntryController extends Controller
             $err = array(
                 'title' => $errors->first('title'),
                 'content' => $errors->first('content'),
-                'tags' => $errors->first('tags'),
+                //'tags' => $errors->first('tags'),
                 'tags.*' => $errors->first('tags.*'),
             );
 
@@ -82,8 +82,6 @@ class DiaryEntryController extends Controller
 
             $entry_tag->tag_id = $item;//
             $entry_tag->entry_id = $entry_id;
-            
-            echo($item);
 
             $entry_tag->save();
 
