@@ -169,6 +169,8 @@ class DiaryEntryController extends Controller
             ),404);
         }
 
+        $tag_db = DB::table('entry_tags')->where('entry_id', $id);
+        $tag_db->delete();
         $diary_entry->delete();
 
         return response()->json(array(
