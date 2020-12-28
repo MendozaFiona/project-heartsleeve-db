@@ -9,13 +9,23 @@ use Illuminate\Support\Facades\DB;
 class TagController extends Controller
 {
     
-    public function index()
+    public function index($entry_id)
     {
-        $tags = Tag::all();
+        $tags = DB::table('entry_tags')->select('tag_id')->where('entry_id', $entry_id)->get(); //->select('tag_id') //
+        
+        /*$tagArr = [];
 
-        return DB::table('tags')
-            ->select('id', 'name')
-            ->paginate(50);
+        foreach($tags['tag_id'] as $tag){
+            $tagArr[] = $tag;
+        }*/
+
+        if($entry_id == NULL){
+            return response()->json(array(
+                'message' => 'Entry not found'
+            ),404);
+        }
+
+        return $tags;
         
         /*return response()->json(array(
             'message' => 'ok',

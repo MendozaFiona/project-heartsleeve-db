@@ -15,21 +15,18 @@ class DiaryEntryController extends Controller
         $this->middleware('jwt-check', ['except' => ['index', 'show']]);
     }
 
-    public function index()
+    public function index() //showing just one random entry, includes yours
     {
-        return DiaryEntry::select('title', 'content')
-            ->paginate(20);
-            //if this is also where discoverpage bases, then remove select
-        //return DiaryEntry::all()
+        return DiaryEntry::inRandomOrder()->first();
     }
 
     
-    public function store(Request $request)
+    public function store(Request $request) //saves in entry_tags table too
     {
         $validator = Validator::make($request->all(),[
             'title' => 'required',
             'content' => 'required',
-            //'tags' => 'required',
+            'tags' => 'required',
             'tags.*' => 'distinct',
         ]);
 
@@ -39,7 +36,7 @@ class DiaryEntryController extends Controller
             $err = array(
                 'title' => $errors->first('title'),
                 'content' => $errors->first('content'),
-                //'tags' => $errors->first('tags'),
+                'tags' => $errors->first('tags'),
                 'tags.*' => $errors->first('tags.*'),
             );
 
@@ -56,13 +53,10 @@ class DiaryEntryController extends Controller
         $diary_entry->user_id = auth('api')->user()->id;
         $diary_entry->content = $request->input('content');
     
-        $diary_entry->save(); //uncommentafter
+        $diary_entry->save();
 
         $entry_id = $diary_entry->id;
 
-        //
-        
-        //
         $data = $request->all();
 
         foreach($data['tags'] as $item){
@@ -112,6 +106,7 @@ class DiaryEntryController extends Controller
     
     public function update(Request $request, $id)
     {
+        echo($request['id']);
         $diary_entry = DiaryEntry::find($id);
 
         if($diary_entry == NULL){
@@ -123,6 +118,8 @@ class DiaryEntryController extends Controller
         $validator = Validator::make($request->all(),[
             'title' => 'required',
             'content' => 'required',
+            'tags' => 'required',
+            'tags.*' => 'distinct',
         ]);
 
         if($validator->fails()){
@@ -131,6 +128,8 @@ class DiaryEntryController extends Controller
             $err = array(
                 'title' => $errors->first('title'),
                 'content' => $errors->first('content'),
+                'tags' => $errors->first('tags'),
+                'tags.*' => $errors->first('tags.*'),
             );
 
             return response()->json(array(
@@ -146,6 +145,33 @@ class DiaryEntryController extends Controller
 
         if($request->has('content')){
             $diary_entry->content = $request->input('content');
+        }
+
+        $entry_id = $diary_entry->id;
+        $old_tags = DB::table('entry_tags')->where('entry_id', $entry_id);
+        $old_tags->delete(); //new tag pair created each time
+
+        if($request->has('tags')){
+            foreach($request['tags'] as $item){
+                $entry_tag = new EntryTag; //should not create if existing
+    
+                $tag_db = DB::table('tags')->where('id', $item)->first();
+    
+                if($tag_db == null){
+                    $tag = new Tag;
+    
+                    $tag->id = $item;
+                    $tag->name = $item;
+    
+                    $tag->save();
+                }                  
+    
+                $entry_tag->tag_id = $item;//
+                $entry_tag->entry_id = $entry_id;
+    
+                $entry_tag->save();
+    
+            }
         }
     
         $diary_entry->save();

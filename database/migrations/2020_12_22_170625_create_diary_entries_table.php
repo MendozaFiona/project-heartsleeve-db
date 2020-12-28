@@ -18,7 +18,7 @@ class CreateDiaryEntriesTable extends Migration
             $table->uuid('user_id');
             $table->foreign('user_id')->references('id')->on('users');
             $table->string('title');
-            $table->string('content');
+            $table->text('content');
             //$table->string('tag_id')->references('id')->on('tags');
             //just call the entry_tag table for tags^
             $table->timestamps();

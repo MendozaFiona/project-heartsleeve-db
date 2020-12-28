@@ -14,7 +14,7 @@ class UserEntriesController extends Controller
 
         if($user == NULL){
             return response()->json(array(
-                'message' => 'User is not found'
+                'message' => 'User not found'
             ),404);
         }
 

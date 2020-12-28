@@ -24,7 +24,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 Route::apiResource('register', RegisterController::class)->only(['store']);
-Route::apiResource('tags', TagController::class)->only(['index']);
+Route::apiResource('diary_entries.tags', TagController::class)->only(['index']);//not sure about this syntax
 Route::apiResource('diary_entries', DiaryEntryController::class);
 Route::apiResource('users.diary_entries', UserEntriesController::class)->only(['index']);
 
