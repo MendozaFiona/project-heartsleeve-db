@@ -5,13 +5,18 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class RegisterController extends Controller
 {
+    public function __construct(){
+        $this->middleware('jwt-check', ['except' => ['index', 'store']]);
+    }
+
     public function index() //for get
     {
-        //
+        //return User::all();
     }
 
     
@@ -60,20 +65,37 @@ class RegisterController extends Controller
     }
 
     
-    public function show($id) //get recipes/<id>
+    public function destroy($id)
     {
-        //
-    }
+        $user = User::find($id);
 
-    
-    public function update(Request $request, $id) //put
-    {
-        //
-    }
+        if($user == NULL){
+            return response()->json(array(
+                'message' => 'User not found'
+            ),404);
+        }
 
-    
-    public function destroy($id) //delete
-    {
-        //
+        $entries = DB::table('diary_entries')->where('user_id', $id)->get();
+        $all_entries = DB::table('diary_entries')->where('user_id', $id);
+       
+        if($entries != NULL){
+            foreach($entries as $entry){
+                $entry_id = $entry->id;
+                $entry_tags = DB::table('entry_tags')->where('entry_id', $entry_id);
+
+                if($entry_tags != NULL){
+                    $entry_tags->delete();
+                }
+
+                $all_entries->delete();
+            }
+        }
+
+        $user->delete();
+
+        return response()->json(array(
+            'message' => 'User successfully deleted', 
+        ),200);
+        
     }
 }

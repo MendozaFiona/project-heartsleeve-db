@@ -11,13 +11,9 @@ class TagController extends Controller
     
     public function index($entry_id)
     {
+        //$tags = DB::table('entry_tags')->where('entry_id', $entry_id)->pluck('tag_id')->toArray();
         $tags = DB::table('entry_tags')->select('tag_id')->where('entry_id', $entry_id)->get(); //->select('tag_id') //
         
-        /*$tagArr = [];
-
-        foreach($tags['tag_id'] as $tag){
-            $tagArr[] = $tag;
-        }*/
 
         if($entry_id == NULL){
             return response()->json(array(

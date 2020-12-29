@@ -24,6 +24,8 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 Route::apiResource('register', RegisterController::class)->only(['store']);
+Route::apiResource('delete_user', RegisterController::class)->only(['destroy']);
+//Route::apiResource('get_users', RegisterController::class)->only(['index']);
 Route::apiResource('diary_entries.tags', TagController::class)->only(['index']);//not sure about this syntax
 Route::apiResource('diary_entries', DiaryEntryController::class);
 Route::apiResource('users.diary_entries', UserEntriesController::class)->only(['index']);
